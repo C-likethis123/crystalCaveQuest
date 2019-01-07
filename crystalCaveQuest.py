@@ -1,5 +1,7 @@
 import win32api, win32con
-import time
+from time import sleep
+from PIL import ImageGrab, Image
+from numpy import mean, array
 
 class Coord:
         #When starting game
@@ -29,40 +31,61 @@ class Coord:
         closeScroll = (1071, 676)
         back = (664,482)
 
-class otherData:
-        first_screen = (2,0)
-        second_screen = (2,1)
-        third_screen = (2,0) #one at top, other at bottom
-        
-        
         
 def leftClick():
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
-        time.sleep(0.1)
+        sleep(0.1)
+        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0,0)
+        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
+        sleep(0.1)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0,0)
 
 
 def leftDown():
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0,0)
-        time.sleep(0.1)
+        sleep(0.1)
         print("Left down")
 
 def leftUp():
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0,0)
-        time.sleep(0.1)
+        sleep(0.1)
         print("Left release")
 
 def clickHere(cord):
         win32api.SetCursorPos((cord[0], cord[1]))
-        time.sleep(2)
+        sleep(2)
         leftClick()
-        time.sleep(2)
+        sleep(2)
      
 def get_cords():
         x,y = win32api.GetCursorPos()
-        #x = x - x_pad
-        #y = y - y_pad
         print(x,y)
+
+
+def checkMonsterMissed():
+        sleep(4)
+        box = (1240,794, 1334, 809)
+        healthBar = ImageGrab.grab(box)
+        healthBar = array(healthBar)
+        healthBar[:, :, 1] *= 0
+        healthBar[:, :, 2] *= 0
+        oneList = []
+        for sublist in healthBar:
+                for channel in sublist:
+                        oneList.append(channel)
+
+
+
+
+
+        if (mean(oneList) > 0):
+                return True
+        else:
+                return False
+
+
+
+
 
 def startGame():
         #get the coords from entering the quest.
@@ -72,13 +95,43 @@ def startGame():
 
 def attackMonster():
         clickHere(Coord.finalSpell)
-        clickHere(Coord.doneButton)
+        sleep(4)
+        monsterDied = not checkMonsterMissed()
+        if monsterDied == True:
+                clickHere(Coord.doneButton)
+        else:
+                while monsterDied == False:
+                        clickHere(Coord.attack)
+                        print("in loop attack")
+                        monsterDied = checkMonsterMissed()
+
+
+
+                print("exited loop")
+                monsterDied = 0
+                clickHere(Coord.doneButton)
+
 
 
 
 def attackTwoMonsters():
         clickHere(Coord.multi)
-        clickHere(Coord.doneButton)
+        sleep(4)
+        monsterDied = not checkMonsterMissed()
+
+        if monsterDied == True:
+                clickHere(Coord.doneButton)
+        else:
+                while monsterDied == False:
+                        clickHere(Coord.attack)
+                        print("in loop attack2")
+                        monsterDied = checkMonsterMissed()
+                        print(monsterDied)
+
+        
+                print("exited loop attack2")
+                monsterDied = 0
+                clickHere(Coord.doneButton)
 
 
         
@@ -91,11 +144,14 @@ def firstScreen():
                 
 
         clickHere(Coord.toNextScreen)
+        sleep(1)
 
 
 def secondScreen():
         for monster in range(0,2):
+                sleep(1)
                 clickHere(Coord.toNextScreen)
+                sleep(1)
                 attackMonster()
 
 
@@ -137,27 +193,23 @@ def sixthScreen():
 
 def bridge():
         clickHere(Coord.toTop2)
-        print("clicked toTop2 once")
-        time.sleep(3)
+        sleep(3)
 
-        for clicks in range(0,3):
+        for clicks in range(0,5):
                 clickHere(Coord.toTop2)
-                print("toTop2 once")
-                time.sleep(1)
+                sleep(1)
 
 
 
-
+        sleep(1)
         clickHere(Coord.goAcross)
-        print("clicked go across")
         clickHere(Coord.acrossBridge)
-        print("going across the bridge")
-        time.sleep(5)
+        sleep(5)
 
 
 def eight():
         clickHere(Coord.fountain)
-        time.sleep(5)
+        sleep(5)
 
         clickHere(Coord.toNextScreen)
         attackMonster()
@@ -173,15 +225,16 @@ def entranceToCave():
 
 def crystalWall():
         clickHere(Coord.toCrystalCave)
-
+        sleep(2)
         clickHere(Coord.stun)
+        sleep(2)
         clickHere(Coord.double)
-        time.sleep(2)
+        sleep(3)
         clickHere(Coord.triple)
-        time.sleep(2)
+        sleep(3)
         
         clickHere(Coord.doneButton)
-        clickHere(Coord.toCrystalCave)
+        clickHere(Coord.toCrystalTree)
 
 
 def crystalTree():
@@ -189,12 +242,18 @@ def crystalTree():
         attackTwoMonsters()
 
         clickHere(Coord.toCrystalTree)
+        sleep(3)
         clickHere(Coord.stun)
+        sleep(3)
+        
         clickHere(Coord.double)
+        sleep(3)
         clickHere(Coord.triple)
+        sleep(3)
         clickHere(Coord.finalSpell)
 
         clickHere(Coord.doneButton)
+        sleep(1)
         clickHere(Coord.toCrystalCave)
 
 
@@ -207,46 +266,38 @@ def ending():
         
 def main():
        startGame()
-       print("in game now")
        
        firstScreen()
-       print("finished first screen")
        
        secondScreen()
-       print("finished second screen")
-       
+
        thirdScreen()
-       print("finished third screen")
        
        fourthScreen()
-       print("finished fourth screen")
 
        fifthScreen()
-       print("finished fifth screen")
 
        sixthScreen()
-       print("finished sixth screen")
 
        bridge()
-       print("finished bridge area")
 
        eight()
-       print("finished eighth screen")
 
        entranceToCave()
-       print("got through entrance area")
 
        crystalWall()
-       print("got through crystal cave")
 
        crystalTree()
-       print("got through crystal tree")
 
        ending()
-       print("got through ending, prepared for another round")
+       print("ending, starting new game...")
+       sleep(5)
 
-       time.sleep(5)
+
+def mainloop():
+        while True:
+                main()
 
 
-while True:
-        main()
+
+mainloop()
