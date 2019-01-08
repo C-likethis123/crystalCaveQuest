@@ -1,36 +1,33 @@
 import win32api, win32con
-from time import sleep
+from time import sleep, time
 from PIL import ImageGrab, Image
 from numpy import mean, array
 
-class Coord:
-        #When starting game
-        toDashboard = (1476, 512)
-        clickQuest = (779, 622)
-        toNextScreen = (1536, 450)
-        finalSpell = (1449, 682)
-        doneButton = (1089, 578)
-        stun = (892, 680)
-        attack = (1056, 665)
-        double = (1170, 685)
-        triple = (1210, 684)
-        multi = (1309, 674)
+#Global constants
+toDashboard = (1476, 512)
+clickQuest = (779, 622)
+toNextScreen = (1536, 450)
+finalSpell = (1449, 682)
+doneButton = (1089, 578)
+stun = (892, 680)
+attack = (1056, 665)
+multi = (1309, 674)
+
+toBottom = (1529, 576)
+toTop1 = (978, 460)
+toTop2 = (1513, 314)
+goAcross = (994, 278)
+acrossBridge = (1528, 279)
+fountain = (1057, 351)
+toCrystalCave = (1063, 321)
+
+toCrystalTree = (1091, 179)
+endQuest = (1096, 685)
+openScroll = (1168, 792)
+potions = (1349, 509)
+closeScroll = (1071, 676)
+back = (664,482)
         
-        toBottom = (1529, 576)
-        toTop1 = (978, 460)
-        toTop2 = (1513, 314)
-        goAcross = (994, 278)
-        acrossBridge = (1528, 279)
-        fountain = (1057, 351)
-        toCrystalCave = (1063, 321)
-
-        toCrystalTree = (1091, 179)
-        endQuest = (1096, 685)
-        openScroll = (1168, 792)
-        potions = (1349, 509)
-        closeScroll = (1071, 676)
-        back = (664,482)
-
         
 def leftClick():
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
@@ -62,9 +59,9 @@ def get_cords():
         print(x,y)
 
 
-def checkMonsterMissed():
+def monsterHasDied():
         sleep(4)
-        box = (1240,794, 1334, 809)
+        box = (1023,554, 1156, 586)
         healthBar = ImageGrab.grab(box)
         healthBar = array(healthBar)
         healthBar[:, :, 1] *= 0
@@ -76,11 +73,12 @@ def checkMonsterMissed():
 
 
 
-
-
-        if (mean(oneList) > 0):
+        brightness = mean(oneList)
+        print(brightness)
+        if (brightness > 50):
                 return True
         else:
+                print("the brightness is %f" % brightness)
                 return False
 
 
@@ -89,182 +87,178 @@ def checkMonsterMissed():
 
 def startGame():
         #get the coords from entering the quest.
-        clickHere(Coord.toDashboard)
-        clickHere(Coord.clickQuest)
+        clickHere(toDashboard)
+        clickHere(clickQuest)
 
 
 def attackMonster():
-        clickHere(Coord.finalSpell)
+        clickHere(finalSpell)
         sleep(4)
-        monsterDied = not checkMonsterMissed()
+        monsterDied = monsterHasDied()
         if monsterDied == True:
-                clickHere(Coord.doneButton)
+                clickHere(doneButton)
         else:
                 while monsterDied == False:
-                        clickHere(Coord.attack)
+                        clickHere(attack)
                         print("in loop attack")
-                        monsterDied = checkMonsterMissed()
+                        monsterDied = monsterHasDied()
+
 
 
 
                 print("exited loop")
                 monsterDied = 0
-                clickHere(Coord.doneButton)
+                clickHere(doneButton)
 
 
 
 
 def attackTwoMonsters():
-        clickHere(Coord.multi)
+        clickHere(multi)
         sleep(4)
-        monsterDied = not checkMonsterMissed()
+        monsterDied = monsterHasDied()
 
         if monsterDied == True:
-                clickHere(Coord.doneButton)
+                clickHere(doneButton)
         else:
                 while monsterDied == False:
-                        clickHere(Coord.attack)
+                        clickHere(attack)
                         print("in loop attack2")
-                        monsterDied = checkMonsterMissed()
+                        monsterDied = monsterHasDied()
                         print(monsterDied)
+
 
         
                 print("exited loop attack2")
                 monsterDied = 0
-                clickHere(Coord.doneButton)
+                clickHere(doneButton)
 
 
         
 
 def firstScreen():
         for monster in range(0,2):
-                clickHere(Coord.toNextScreen)
+                clickHere(toNextScreen)
                 attackMonster()
 
                 
 
-        clickHere(Coord.toNextScreen)
+        clickHere(toNextScreen)
         sleep(1)
 
 
 def secondScreen():
         for monster in range(0,2):
                 sleep(1)
-                clickHere(Coord.toNextScreen)
+                clickHere(toNextScreen)
                 sleep(1)
                 attackMonster()
 
 
 
-        clickHere(Coord.toNextScreen)
+        clickHere(toNextScreen)
         attackTwoMonsters()
         
-        clickHere(Coord.toNextScreen)
+        clickHere(toNextScreen)
 
 
 def thirdScreen():
-        clickHere(Coord.toBottom)
+        clickHere(toBottom)
         attackMonster()
 
-        clickHere(Coord.toBottom)
+        clickHere(toBottom)
 
 def fourthScreen():
-        clickHere(Coord.toNextScreen)
+        clickHere(toNextScreen)
         attackMonster()
-        clickHere(Coord.back)
+        clickHere(back)
 
 
 def fifthScreen():
-        clickHere(Coord.toTop1)
-        clickHere(Coord.toTop2)
+        clickHere(toTop1)
+        clickHere(toTop2)
         attackMonster()
 
-        clickHere(Coord.toTop2)
+        clickHere(toTop2)
 
 
 def sixthScreen():
         for monster in range(0,5):
-                clickHere(Coord.toTop2)
+                clickHere(toTop2)
                 attackMonster()
 
 
-        clickHere(Coord.toTop2)
+        clickHere(toTop2)
         
 
 def bridge():
-        clickHere(Coord.toTop2)
+        clickHere(toTop2)
         sleep(3)
 
         for clicks in range(0,5):
-                clickHere(Coord.toTop2)
+                clickHere(toTop2)
                 sleep(1)
 
 
 
         sleep(1)
-        clickHere(Coord.goAcross)
-        clickHere(Coord.acrossBridge)
+        clickHere(goAcross)
+        clickHere(acrossBridge)
         sleep(5)
 
 
 def eight():
-        clickHere(Coord.fountain)
+        clickHere(fountain)
         sleep(5)
 
-        clickHere(Coord.toNextScreen)
+        clickHere(toNextScreen)
         attackMonster()
 
-        clickHere(Coord.toNextScreen)
+        clickHere(toNextScreen)
 
 
 def entranceToCave():
-        clickHere(Coord.toCrystalCave)
+        clickHere(toCrystalCave)
         attackTwoMonsters()
-        clickHere(Coord.toCrystalCave)
+        clickHere(toCrystalCave)
 
 
 def crystalWall():
-        clickHere(Coord.toCrystalCave)
+        clickHere(toCrystalCave)
         sleep(2)
-        clickHere(Coord.stun)
-        sleep(2)
-        clickHere(Coord.double)
-        sleep(3)
-        clickHere(Coord.triple)
-        sleep(3)
+
+        attackMonster()
         
-        clickHere(Coord.doneButton)
-        clickHere(Coord.toCrystalTree)
+        clickHere(toCrystalTree)
 
 
 def crystalTree():
-        clickHere(Coord.toCrystalTree)
+        clickHere(toCrystalTree)
         attackTwoMonsters()
 
-        clickHere(Coord.toCrystalTree)
+        clickHere(toCrystalTree)
         sleep(3)
-        clickHere(Coord.stun)
-        sleep(3)
-        
-        clickHere(Coord.double)
-        sleep(3)
-        clickHere(Coord.triple)
-        sleep(3)
-        clickHere(Coord.finalSpell)
 
-        clickHere(Coord.doneButton)
-        sleep(1)
-        clickHere(Coord.toCrystalCave)
+        attackMonster()
+
+        clickHere(toCrystalCave)
+        sleep(2)
+        
+        #take screenshot
+        #if screenshot is the shard thing, click Ok
+        #else, go about the business. 
 
 
 def ending():
-        clickHere(Coord.endQuest)
-        clickHere(Coord.openScroll)
-        clickHere(Coord.potions)
-        clickHere(Coord.closeScroll)
+        clickHere(endQuest)
+        clickHere(openScroll)
+        clickHere(potions)
+        clickHere(closeScroll)
 
         
 def main():
+       startTime = time()
+
        startGame()
        
        firstScreen()
@@ -290,6 +284,10 @@ def main():
        crystalTree()
 
        ending()
+       
+       timeTaken = time() - startTime
+       print("This round of games took %f seconds" % timeTaken)
+       
        print("ending, starting new game...")
        sleep(5)
 
