@@ -20,6 +20,7 @@ goAcross = (994, 278)
 acrossBridge = (1528, 279)
 fountain = (1057, 351)
 toCrystalCave = (1063, 321)
+foundShard = (1073, 642)
 
 toCrystalTree = (1091, 179)
 endQuest = (1096, 685)
@@ -27,7 +28,23 @@ openScroll = (1168, 792)
 potions = (1349, 509)
 closeScroll = (1071, 676)
 back = (664,482)
-        
+
+
+gameRound = 1
+
+'''
+(refer to https://pysource.com/2018/07/20/detect-how-similar-two-images-are-with-opencv-and-python/)
+
+TODO: Write a detailed README for people who wants to use this bot.
+
+TODO: Write a 'startFrom' function so people can pause and pick up from
+where they paused.
+
+TODO: Check if the person leveled up. If so, click "Battle on!"
+
+TODO: Implement a function that checks if the person has obtained the shard. 
+'''
+ 
         
 def leftClick():
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
@@ -244,9 +261,12 @@ def crystalTree():
         clickHere(toCrystalCave)
         sleep(2)
         
-        #take screenshot
-        #if screenshot is the shard thing, click Ok
-        #else, go about the business. 
+        global gameRound
+        if gameRound == 1:
+                clickHere(foundShard)
+                gameRound += 1
+                clickHere(toCrystalCave)
+       
 
 
 def ending():
@@ -256,46 +276,40 @@ def ending():
         clickHere(closeScroll)
 
         
+def game():
+
+        try:
+                startTime = time()
+                startGame()
+                firstScreen()
+                secondScreen()
+                thirdScreen()
+                fourthScreen()
+                fifthScreen()
+                sixthScreen()
+                bridge()
+                eight()
+                entranceToCave()
+                crystalWall()
+                crystalTree()
+                ending()
+                timeTaken = time() - startTime
+                print("This round of games took %f seconds" % timeTaken)
+                print("ending, starting new game...")
+                sleep(5)
+
+        except KeyboardInterrupt:
+                pauseGame = input("Do you want to stop or pause this script?")
+                if pauseGame == "Y":
+                        raise Exception
+                
+
+
+
 def main():
-       startTime = time()
-
-       startGame()
-       
-       firstScreen()
-       
-       secondScreen()
-
-       thirdScreen()
-       
-       fourthScreen()
-
-       fifthScreen()
-
-       sixthScreen()
-
-       bridge()
-
-       eight()
-
-       entranceToCave()
-
-       crystalWall()
-
-       crystalTree()
-
-       ending()
-       
-       timeTaken = time() - startTime
-       print("This round of games took %f seconds" % timeTaken)
-       
-       print("ending, starting new game...")
-       sleep(5)
-
-
-def mainloop():
         while True:
-                main()
+                game()
 
 
 
-mainloop()
+main()
