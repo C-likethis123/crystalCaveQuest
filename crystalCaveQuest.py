@@ -1,7 +1,8 @@
 import win32api, win32con
+import sys
 from time import sleep, time
 from PIL import ImageGrab, Image
-from numpy import mean, array
+from numpy import mean, array, dot
 
 #Global constants
 toDashboard = (1476, 512)
@@ -28,6 +29,7 @@ openScroll = (1168, 792)
 potions = (1349, 509)
 closeScroll = (1071, 676)
 back = (664,482)
+hasLeveledUp = (1092, 688)
 
 
 gameRound = 1
@@ -37,14 +39,13 @@ gameRound = 1
 
 TODO: Write a detailed README for people who wants to use this bot.
 
-TODO: Write a 'startFrom' function so people can pause and pick up from
-where they paused.
-
 TODO: Check if the person leveled up. If so, click "Battle on!"
 
 TODO: Implement a function that checks if the person has obtained the shard. 
 '''
- 
+
+
+     
         
 def leftClick():
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
@@ -67,9 +68,9 @@ def leftUp():
 
 def clickHere(cord):
         win32api.SetCursorPos((cord[0], cord[1]))
-        sleep(2)
+        sleep(1.5)
         leftClick()
-        sleep(2)
+        sleep(1.5)
      
 def get_cords():
         x,y = win32api.GetCursorPos()
@@ -103,36 +104,35 @@ def monsterHasDied():
 
 
 def startGame():
-        #get the coords from entering the quest.
         clickHere(toDashboard)
         clickHere(clickQuest)
 
 
 def attackMonster():
         clickHere(finalSpell)
-        sleep(4)
+        sleep(3.5)
         monsterDied = monsterHasDied()
         if monsterDied == True:
                 clickHere(doneButton)
         else:
                 while monsterDied == False:
                         clickHere(attack)
-                        print("in loop attack")
                         monsterDied = monsterHasDied()
 
 
 
 
                 print("exited loop")
-                monsterDied = 0
                 clickHere(doneButton)
+                sleep(1.5)
+
 
 
 
 
 def attackTwoMonsters():
         clickHere(multi)
-        sleep(4)
+        sleep(2)
         monsterDied = monsterHasDied()
 
         if monsterDied == True:
@@ -140,16 +140,14 @@ def attackTwoMonsters():
         else:
                 while monsterDied == False:
                         clickHere(attack)
-                        print("in loop attack2")
                         monsterDied = monsterHasDied()
                         print(monsterDied)
 
 
         
-                print("exited loop attack2")
-                monsterDied = 0
                 clickHere(doneButton)
 
+                sleep(2)
 
         
 
@@ -210,15 +208,15 @@ def sixthScreen():
 
 def bridge():
         clickHere(toTop2)
-        sleep(3)
+        sleep(1.5)
 
-        for clicks in range(0,5):
+        for clicks in range(0,3):
                 clickHere(toTop2)
-                sleep(1)
+                sleep(0.3)
 
 
 
-        sleep(1)
+        sleep(0.5)
         clickHere(goAcross)
         clickHere(acrossBridge)
         sleep(5)
@@ -277,7 +275,6 @@ def ending():
 
         
 def game():
-
         try:
                 startTime = time()
                 startGame()
@@ -299,9 +296,9 @@ def game():
                 sleep(5)
 
         except KeyboardInterrupt:
-                pauseGame = input("Do you want to stop or pause this script?")
-                if pauseGame == "Y":
-                        raise Exception
+                pauseGame = input("Do you want to stop or pause this script? Type stop to stop: " )
+                if pauseGame == "stop":
+                        sys.exit(0)
                 
 
 
